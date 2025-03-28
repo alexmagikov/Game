@@ -23,13 +23,20 @@ public class Game
     {
 
     }
-    public void withdrawMap()
+    public static (int positionX, int positionY) WithdrawMap()
     {
         string[] map = File.ReadAllLines("map.txt");
-
+        var counter = 0;
         foreach (var lines in map)
         {
             Console.WriteLine(lines);
+            var positionX = lines.IndexOf('@');
+            if (positionX != -1)
+            {
+                return (positionX, counter);
+            }
+            counter++;
         }
+        return (-1, -1);
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace Game;
 
 public class Game
 {
-    public int currentXPosition = 0;
-    public int currentYPosition = 0;
-    public char currentChar;
+    private int currentXPosition = -1;
+    private int currentYPosition = -1;
+    private char currentChar;
     public void OnLeft(object sender, EventArgs args)
     {
         Console.CursorLeft--;
@@ -23,7 +24,7 @@ public class Game
     {
 
     }
-    public static (int positionX, int positionY) WithdrawMap()
+    public void WithdrawMap()
     {
         string[] map = File.ReadAllLines("map.txt");
         var counter = 0;
@@ -33,10 +34,12 @@ public class Game
             var positionX = lines.IndexOf('@');
             if (positionX != -1)
             {
-                return (positionX, counter);
+                this.currentXPosition = positionX;
+                this.currentYPosition = counter;
+                return;
             }
             counter++;
         }
-        return (-1, -1);
+        return;
     }
 }

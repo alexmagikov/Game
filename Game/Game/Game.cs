@@ -1,4 +1,6 @@
-﻿namespace Game;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Game;
 
 public class Game
 {
@@ -8,6 +10,11 @@ public class Game
     => Console.WriteLine("Going right");
     public void withdrawMap()
     {
+        string[] map = File.ReadAllLines("map.txt");
 
+        foreach (var lines in map)
+        {
+            Console.WriteLine(lines);
+        }
     }
 }

@@ -5,62 +5,94 @@ namespace Game;
 
 public class MyGame
 {
-    private string[]? map; 
-    private char freeChar = '_';
+    private string[]? map;
+    private const char FreeChar = '_';
+    private const char WallChar = '#';
+    private const char PlayerChar = '@';
 
     private int currentXPosition = -1;
     private int currentYPosition = -1;
+
     public void OnLeft(object sender, EventArgs args)
     {
-        if (!(map[currentYPosition][currentXPosition - 1] == '#'))
+        if (currentXPosition >= 0 && map != null &&
+            currentYPosition >= 0 && currentYPosition < map.Length &&
+            map[currentYPosition][currentXPosition - 1] != WallChar)
         {
-            Console.Write(freeChar);
-            Console.CursorLeft--;
-            Console.Write('@');
-            currentXPosition--;
-
+            UpdatePosition(currentXPosition - 1, currentYPosition);
         }
     }
+
     public void OnRight(object sender, EventArgs args)
     {
-        Console.CursorLeft++;
+        if (map != null && currentXPosition >= 0 &&
+            currentXPosition < map[currentYPosition].Length - 1 &&
+            map[currentYPosition][currentXPosition + 1] != WallChar)
+        {
+            UpdatePosition(currentXPosition + 1, currentYPosition);
+        }
     }
+
     public void OnUp(object sender, EventArgs args)
     {
-        Console.CursorTop++;
+        if (currentYPosition > 0 && map != null &&
+            currentXPosition >= 0 && currentXPosition < map[currentYPosition - 1].Length &&
+            map[currentYPosition - 1][currentXPosition] != WallChar)
+        {
+            UpdatePosition(currentXPosition, currentYPosition - 1);
+        }
     }
+
     public void OnDown(object sender, EventArgs args)
     {
-        Console.CursorTop--;
+        if (map != null && currentYPosition < map.Length - 1 &&
+            currentXPosition >= 0 && currentXPosition < map[currentYPosition + 1].Length &&
+            map[currentYPosition + 1][currentXPosition] != WallChar)
+        {
+            UpdatePosition(currentXPosition, currentYPosition + 1);
+        }
     }
+
+    private void UpdatePosition(int newX, int newY)
+    {
+
+        Console.SetCursorPosition(currentXPosition, currentYPosition);
+        Console.Write(FreeChar);
+
+        currentXPosition = newX;
+        currentYPosition = newY;
+        Console.SetCursorPosition(currentXPosition, currentYPosition);
+        Console.Write(PlayerChar);
+        Console.SetCursorPosition(currentXPosition, currentYPosition);
+    }
+
     public void WithdrawMap()
     {
-        string[] mapLines = File.ReadAllLines("C:\\Users\\User\\source\\repos\\Game\\Game\\Game\\map.txt");
-        var counter = 0;
-        var indexLine = 0;
-        this.map = new string[mapLines.Length];
-        foreach (var lines in mapLines)
+        string projectDir = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        string mapPath = Path.Combine(projectDir, "map.txt");
+        string[] mapLines = File.ReadAllLines(mapPath);
+        if (mapLines.Length == 0)
         {
-            Console.WriteLine(lines);
-            this.map[indexLine] = new string(lines);
-            var positionX = lines.IndexOf('@');
+            throw new FormatException("Null map");
+        }
+        this.map = new string[mapLines.Length];
+
+        for (int i = 0; i < mapLines.Length; i++)
+        {
+            Console.WriteLine(mapLines[i]);
+            this.map[i] = mapLines[i];
+
+            int positionX = mapLines[i].IndexOf(PlayerChar);
             if (positionX != -1)
             {
                 this.currentXPosition = positionX;
-                this.currentYPosition = counter;
-                return;
+                this.currentYPosition = i;
             }
-            counter++;
         }
-        Console.CursorTop--;
-        //for (int i = 0; i < currentXPosition; i++)
-        //{
-        //    Console.CursorLeft--;
-        //}
-        //for (int i = 0; i < currentYPosition; i++)
-        //{
-        //    Console.CursorTop--;
-        //}
-        return;
+        Console.SetCursorPosition(currentXPosition, currentYPosition);
+        if (currentXPosition == -1 || currentYPosition == -1)
+        {
+            throw new Exception("Player character not found on the map.");
+        }
     }
 }

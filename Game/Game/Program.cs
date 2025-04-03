@@ -1,6 +1,5 @@
 ﻿using Game;
 
-
 var eventLoop = new EventLoop();
 var game = new MyGame();
 game.WithdrawMap();
